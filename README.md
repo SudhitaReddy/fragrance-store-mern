@@ -78,7 +78,6 @@ Login enabled
 JWT token generated
 User can access protected pages
 Forgot password sends reset link
-
 User resets password via email link
-## 📂 Project Structure
+
 
