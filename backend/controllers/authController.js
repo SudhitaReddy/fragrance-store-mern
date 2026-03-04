@@ -49,6 +49,11 @@ exports.verifyOtp = async (req, res) => {
 
     if (!user) return res.status(400).json({ msg: "User not found" });
 
+    console.log("Entered OTP:", otp);
+    console.log("Stored OTP:", user.otp);
+    console.log("Expire Time:", user.otpExpire);
+    console.log("Current Time:", Date.now());
+
     if (user.otp !== otp || user.otpExpire < Date.now()) {
       return res.status(400).json({ msg: "Invalid or expired OTP" });
     }
@@ -148,7 +153,9 @@ exports.resetPassword = async (req, res) => {
       resetExpire: { $gt: Date.now() },
     });
 
-    if (!user) return res.status(400).json({ msg: "Invalid or expired link" });
+    if (!user) {
+      return res.status(400).json({ msg: "Invalid or expired link" });
+    }
 
     user.password = await bcrypt.hash(password, 10);
     user.resetToken = null;

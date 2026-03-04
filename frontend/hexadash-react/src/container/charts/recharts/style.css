@@ -1,0 +1,214 @@
+/* Recharts Card Styling */
+.ninjadash-chart-container {
+  width: 100%;
+  height: 100%;
+  /* min-height: 150px; */
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  padding: 0;
+  margin: 0;
+}
+
+.ninjadash-chart-container h4 {
+  margin-bottom: 20px;
+  font-size: 16px;
+  font-weight: 600;
+  color: #1f2937;
+  line-height: 1.4;
+  text-align: left;
+}
+
+.ninjadash-chart-container .recharts-wrapper {
+  width: 100% !important;
+  height: 350px !important;
+  min-height: 350px;
+  max-height: 350px;
+  margin: 0;
+  padding: 0;
+}
+
+.ninjadash-chart-container .recharts-surface {
+  width: 100% !important;
+  height: 100% !important;
+}
+
+.ninjadash-chart-container .recharts-responsive-container {
+  width: 100% !important;
+  height: 350px !important;
+  min-height: 350px;
+  max-height: 350px;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .ninjadash-chart-container {
+    /* min-height: 300px; */
+  }
+  
+  .ninjadash-chart-container .recharts-wrapper {
+    height: 300px !important;
+    min-height: 300px;
+    max-height: 300px;
+  }
+  
+  .ninjadash-chart-container .recharts-responsive-container {
+    height: 300px !important;
+    min-height: 300px;
+    max-height: 300px;
+  }
+  
+  .ninjadash-chart-container h4 {
+    font-size: 14px;
+    margin-bottom: 16px;
+  }
+}
+
+@media (max-width: 576px) {
+  .ninjadash-chart-container {
+    min-height: 250px;
+  }
+  
+  .ninjadash-chart-container .recharts-wrapper {
+    height: 250px !important;
+    min-height: 250px;
+    max-height: 250px;
+  }
+  
+  .ninjadash-chart-container .recharts-responsive-container {
+    height: 250px !important;
+    min-height: 250px;
+    max-height: 250px;
+  }
+}
+
+/* Card body padding adjustment */
+.ant-card-body {
+  padding: 20px;
+}
+
+/* Ensure charts don't overflow */
+.ant-card {
+  overflow: hidden;
+}
+
+/* Chart container responsive behavior */
+.ninjadash-chart-container .recharts-responsive-container {
+  width: 100% !important;
+  height: 100% !important;
+}
+
+/* Fix for Recharts v3.2.0 specific styling */
+.recharts-cartesian-axis-tick-value {
+  font-size: 12px;
+  fill: #666;
+  font-weight: 500;
+}
+
+.recharts-legend-item-text {
+  font-size: 12px;
+  fill: #666;
+  font-weight: 500;
+}
+
+.recharts-tooltip-wrapper {
+  font-size: 12px;
+}
+
+.recharts-tooltip-content {
+  background: rgba(255, 255, 255, 0.95) !important;
+  border: 1px solid #e5e7eb !important;
+  border-radius: 8px !important;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06) !important;
+  padding: 8px 12px !important;
+}
+
+.recharts-tooltip-label {
+  font-weight: 600;
+  color: #1f2937;
+  margin-bottom: 4px;
+}
+
+.recharts-cartesian-grid-horizontal line,
+.recharts-cartesian-grid-vertical line {
+  stroke: #f3f4f6;
+  stroke-width: 1;
+}
+
+.recharts-cartesian-axis-tick line {
+  stroke: #e5e7eb;
+  stroke-width: 1;
+}
+
+.recharts-legend-wrapper {
+  padding-top: 16px;
+}
+
+.recharts-legend-item {
+  margin-right: 16px;
+  margin-bottom: 8px;
+}
+
+/* Chart title styling */
+.ninjadash-chart-container h4 {
+  color: #1f2937;
+  font-weight: 600;
+  font-size: 16px;
+  margin-bottom: 20px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid #f3f4f6;
+}
+
+/* Enhanced chart styling */
+.ninjadash-chart-container {
+  background: #fff;
+  border-radius: 8px;
+  /* box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06); */
+  transition: box-shadow 0.2s ease-in-out;
+}
+
+.ninjadash-chart-container:hover {
+  /* box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06); */
+}
+
+/* Better color scheme for Recharts */
+.recharts-bar-rectangle {
+  transition: opacity 0.2s ease-in-out;
+}
+
+.recharts-bar-rectangle:hover {
+  opacity: 0.8;
+}
+
+.recharts-line-dot {
+  transition: r 0.2s ease-in-out;
+}
+
+.recharts-line-dot:hover {
+  r: 6;
+}
+
+.recharts-pie-sector {
+  transition: opacity 0.2s ease-in-out;
+}
+
+.recharts-pie-sector:hover {
+  opacity: 0.8;
+}
+
+/* Ensure proper spacing in cards */
+.ant-card .ant-card-body {
+  padding: 20px;
+}
+
+/* Fix for chart overflow issues */
+.ant-card-body {
+  overflow: visible;
+}
+
+/* Responsive grid adjustments */
+@media (max-width: 992px) {
+  .ant-col {
+    margin-bottom: 20px;
+  }
+}

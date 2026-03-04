@@ -1,0 +1,88 @@
+import { SearchOutlined } from '@ant-design/icons';
+import { Button, Input } from 'antd';
+import React from 'react';
+import { useSelector } from 'react-redux';
+import { AutoCompleteStyled } from './style';
+
+const onSelect = () => {
+  // console.log('onSelect', value);
+};
+
+const renderItem = (title, count) => {
+  return {
+    value: title,
+    label: (
+      <div
+        style={{
+          display: 'flex',
+          justifyContent: 'space-between',
+        }}
+      >
+        {title}
+        {count}
+      </div>
+    ),
+  };
+};
+
+const AutoComplete = React.memo(
+  ({ customComponent, patterns, patternButtons, width = '350px', onSearch, options, placeholder = 'Input here' }) => {
+    const rtl = useSelector((state) => state.ChangeLayoutMode.rtlData);
+
+    const content =
+      options?.length > 0 &&
+      options.map((group) => {
+        const { title, count } = group;
+        return {
+          label: title,
+          options: [renderItem(title, <span className="certain-search-item-count">{count} people</span>)],
+        };
+      });
+
+    const onSearching = (searchText) => {
+      onSearch(searchText);
+    };
+
+    return customComponent ? (
+      <AutoCompleteStyled options={options} style={{ width }} onSelect={onSelect} onSearch={onSearching}>
+        {customComponent}
+      </AutoCompleteStyled>
+    ) : patterns ? (
+      <AutoCompleteStyled
+        className="certain-category-search"
+        classNames={{ popup: { root: "certain-category-search-dropdown" } }}
+        popupMatchSelectWidth={false}
+        styles={{ popup: { root: { width: 300 } } }}
+        style={{ width }}
+        options={content}
+        placeholder={placeholder}
+        onSearch={onSearching}
+      >
+        <Input
+          suffix={
+            patternButtons ? (
+              <Button className="search-btn" style={{ [rtl ? 'marginLeft' : 'marginRight']: -20 }} type="primary">
+                <SearchOutlined />
+              </Button>
+            ) : (
+              <SearchOutlined />
+            )
+          }
+        />
+      </AutoCompleteStyled>
+    ) : (
+      <AutoCompleteStyled
+        options={options}
+        style={{ width }}
+        onSelect={onSelect}
+        onSearch={onSearching}
+        placeholder={placeholder}
+      />
+    );
+  },
+);
+
+
+AutoComplete.displayName = 'AutoComplete';
+
+export { AutoComplete };

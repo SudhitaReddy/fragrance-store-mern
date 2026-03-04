@@ -1,0 +1,168 @@
+[
+  {
+    "id": 8,
+    "date": "September 26, 2025",
+    "version": "1.3.0",
+    "new": [
+      "ApexCharts integration with comprehensive chart types",
+      "Redux Toolkit migration for modern state management",
+      "Enhanced authentication system with localStorage persistence",
+      "React 18 compatibility improvements",
+      "Comprehensive chart examples (Bar, Line, Area, Pie, Radial, Radar, Heatmap, Candlestick)"
+    ],
+    "updated": [
+      "Antd updated to v5.27.3 (latest)",
+      "ApexCharts updated to v5.3.5 (latest)",
+      "React-apexcharts updated to v1.7.0 (latest)",
+      "Recharts updated to v3.2.0 (latest) - Enhanced security, new scale types, animation fixes",
+      "React Router DOM updated to v7.9.1 (latest) - Enhanced performance, better React 18 compatibility",
+      "All dependencies updated to latest stable versions",
+      "Code quality improvements with ESLint fixes",
+      "Performance optimizations with React.memo and useCallback",
+      "Enhanced error handling and fallback mechanisms",
+      "Version management updated to semantic versioning (1.3.0)",
+      "Documentation system enhanced with multiple changelog formats",
+      "Release process standardized for better maintenance",
+      "Project documentation improved with comprehensive guides",
+      "Sidebar menu navigation system enhanced",
+      "Chart rendering system improved for better performance",
+      "Form styling system standardized across components"
+    ],
+    "fixed": [
+      "All webpack compilation errors resolved",
+      "ESLint errors and warnings eliminated",
+      "React 18 deprecation warnings fixed",
+      "Import errors and missing dependencies resolved",
+      "Source map warnings suppressed",
+      "Console warnings cleaned up",
+      "Layout issues after Antd v5 migration fixed",
+      "Icon import errors resolved",
+      "Form validation improvements",
+      "API integration enhanced with fallback mechanisms",
+      "Complete changelog coverage for all previous changes",
+      "Version tracking and release management improved",
+      "Documentation gaps filled with detailed change logs",
+      "Release process streamlined for future updates",
+      "Critical Redux state mutation errors resolved",
+      "Sidebar menu active system fixed with proper click handling",
+      "All Ant Design v5 deprecation warnings eliminated",
+      "React key prop warnings fixed across all components",
+      "DOM property warnings and nesting issues resolved",
+      "Chart components visibility and styling issues fixed",
+      "Performance Overview chart rendering and styling corrected",
+      "Circular progress bar text positioning improved",
+      "Distance slider value display fixed in jobs grid",
+      "Form components primary color consistency achieved",
+      "Radio button and checkbox styling enhanced",
+      "Toggle button primary color issues resolved",
+      "Wizard button theming standardized",
+      "Deprecated rich text editors replaced with modern alternatives",
+      "UNSAFE_componentWillMount warnings eliminated",
+      "findDOMNode deprecation warnings resolved",
+      "Dropdown padding and spacing issues fixed",
+      "Search form styling improved on knowledge base pages",
+      "Filter tab functionality enhanced on search results page",
+      "Modal button spacing and alignment corrected",
+      "Component error boundaries improved with null checks",
+      "Runtime errors in data table components fixed",
+      "React Context provider warnings resolved",
+      "Duplicate ID warnings fixed with useId hook",
+      "Menu navigation infinite loop issues resolved",
+      "Chart.js v3+ compatibility issues addressed",
+      "Component styling consistency improved across all pages"
+    ]
+  },
+  {
+    "id": 7,
+    "date": "September 15, 2024",
+    "version": "1.2.0",
+    "new": [
+      "ApexCharts integration with comprehensive chart types",
+      "Redux Toolkit migration for modern state management",
+      "Enhanced authentication system with localStorage persistence",
+      "React 18 compatibility improvements",
+      "Comprehensive chart examples (Bar, Line, Area, Pie, Radial, Radar, Heatmap, Candlestick)"
+    ],
+    "updated": [
+      "Antd updated to v5.27.3 (latest)",
+      "ApexCharts updated to v5.3.5 (latest)",
+      "React-apexcharts updated to v1.7.0 (latest)",
+          "Recharts updated to v3.2.0 (latest) - Enhanced security, new scale types, animation fixes",
+          "React Router DOM updated to v7.9.1 (latest) - Enhanced performance, better React 18 compatibility",
+      "All dependencies updated to latest stable versions",
+      "Code quality improvements with ESLint fixes",
+      "Performance optimizations with React.memo and useCallback",
+      "Enhanced error handling and fallback mechanisms"
+    ],
+    "fixed": [
+      "All webpack compilation errors resolved",
+      "ESLint errors and warnings eliminated",
+      "React 18 deprecation warnings fixed",
+      "Import errors and missing dependencies resolved",
+      "Source map warnings suppressed",
+      "Console warnings cleaned up",
+      "Layout issues after Antd v5 migration fixed",
+      "Icon import errors resolved",
+      "Form validation improvements",
+      "API integration enhanced with fallback mechanisms"
+    ]
+  },
+  {
+    "id": 6,
+    "date": "March 30, 2023",
+    "version":"1.1.4",
+    "fixed": [
+        "NPM Deps errors"
+    ],
+    "updated": [
+      "Replaced react-sortable-hoc with @dnd-kit"
+    ]
+  },
+  {
+    "id": 5,
+    "date": "January 09, 2023",
+    "version":"1.1.3",
+    "fixed": [
+        "Eslint issue fix"
+    ],
+    "updated": [
+        "Node Sass package updated"
+    ]
+  },
+  {
+    "id": 4,
+    "date": "December 27, 2022",
+    "version":"1.1.2",
+    "new": [
+        "Another 3 demo added"
+    ],
+    "updated": [
+        "Header top icon"
+    ]
+  },
+  {
+    "id": 3,
+    "date": "December 26, 2022",
+    "version":"1.1.1",
+    "new": [
+        "3 new demo added"
+    ],
+    "fixed": [
+        "simple style fix"
+    ]
+  },
+  {
+    "id": 2,
+    "date": "December 25, 2022",
+    "version":"1.1.0",
+    "new": [
+        "3 new demo added"
+    ]
+  },
+  {
+    "id": 1,
+    "date": "December 19, 2022",
+    "version": "1.0.0",
+    "new": ["Initialize Release"]
+  }
+]

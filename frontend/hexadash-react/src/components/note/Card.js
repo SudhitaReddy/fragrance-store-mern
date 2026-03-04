@@ -1,0 +1,99 @@
+ 
+import UilEllipsisV from '@iconscout/react-unicons/icons/uil-ellipsis-v';
+import UilStar from '@iconscout/react-unicons/icons/uil-star';
+import UilTrashAlt from '@iconscout/react-unicons/icons/uil-trash-alt';
+import UilExpandArrows from '@iconscout/react-unicons/icons/uil-expand-arrows';
+import React from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { createSelector } from '@reduxjs/toolkit';
+import { Link } from 'react-router-dom';
+import { Card } from './style';
+import { Bullet } from '../../container/note/style';
+import { noteDeleteData, onLabelUpdate, onStarUpdate } from '../../redux/note/actionCreator';
+import { Cards } from '../cards/frame/cards-frame';
+import { Dropdown } from '../dropdown/dropdown';
+
+// Memoized selector to prevent unnecessary re-renders
+const selectNoteData = createSelector(
+  [(state) => state.Note.data],
+  (noteData) => ({ noteData })
+);
+
+function NoteCard({ data, listeners }) {
+  const dispatch = useDispatch();
+  const { noteData } = useSelector(selectNoteData);
+  const { title, key, description, stared, label } = data;
+  const onLabelChange = (labels) => {
+    dispatch(onLabelUpdate(noteData, key, labels));
+  };
+  const content = (
+    <>
+      <div className="nav-labels">
+        <ul>
+          <li>
+            <Link onClick={() => onLabelChange('personal')} to="#">
+              <Bullet className="personal" /> Personal
+            </Link>
+          </li>
+          <li>
+            <Link onClick={() => onLabelChange('work')} to="#">
+              <Bullet className="work" /> Work
+            </Link>
+          </li>
+          <li>
+            <Link onClick={() => onLabelChange('social')} to="#">
+              <Bullet className="social" /> Social
+            </Link>
+          </li>
+          <li>
+            <Link onClick={() => onLabelChange('important')} to="#">
+              <Bullet className="important" /> Important
+            </Link>
+          </li>
+        </ul>
+      </div>
+    </>
+  );
+  const onHandleDelete = () => {
+    const value = noteData.filter((item) => item.key !== key);
+    dispatch(noteDeleteData(value));
+  };
+
+  return (
+    <Card className={label}>
+      <Cards headless>
+        <h4>
+          <span>
+            {title}
+            <span className={`status-bullet ${label}`} />
+          </span>
+          <div {...listeners}>
+            <UilExpandArrows />
+          </div>
+        </h4>
+        <p>{description}</p>
+        <div className="actions">
+          <span>
+            <Link
+              className={stared ? 'star active' : 'star'}
+              onClick={() => dispatch(onStarUpdate(noteData, key))}
+              to="#"
+            >
+              <UilStar />
+            </Link>
+            <Link onClick={() => onHandleDelete()} to="#">
+              <UilTrashAlt />
+            </Link>
+          </span>
+          <Dropdown content={content}>
+            <Link to="#">
+              <UilEllipsisV />
+            </Link>
+          </Dropdown>
+        </div>
+      </Cards>
+    </Card>
+  );
+}
+
+export default NoteCard;
