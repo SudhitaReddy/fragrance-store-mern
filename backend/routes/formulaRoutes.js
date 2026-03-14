@@ -5,7 +5,10 @@ const {
   getFormulas,
   editFormula,
   copyFormula,
-  deleteFormula
+  deleteFormula,
+  getFormulaById,
+  produceFormula
+
 } = require("../controllers/formulaController");
 
 const { protect } = require("../middleware/authMiddleware");
@@ -15,5 +18,7 @@ router.get("/", protect, getFormulas);
 router.put("/:id", protect, editFormula);
 router.post("/copy/:id", protect, copyFormula);
 router.delete("/:id", protect, deleteFormula);
+router.get("/:id", protect, getFormulaById);
+router.post("/produce/:id", protect, produceFormula);
 
 module.exports = router;

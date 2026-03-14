@@ -1,14 +1,10 @@
 import React, { useEffect, useState } from "react";
-import { Card, Row, Col, Button, Table, List } from "antd";
-import {
-  ExperimentOutlined,
-  PlusOutlined,
-  DatabaseOutlined
-} from "@ant-design/icons";
-import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from "recharts";
 import API from "../api/api";
 import { useNavigate } from "react-router-dom";
-const COLORS = ["#0088FE", "#00C49F", "#FFBB28", "#FF8042"];
+import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from "recharts";
+import "bootstrap/dist/css/bootstrap.min.css";
+
+const COLORS = ["#0d6efd", "#20c997", "#ffc107", "#dc3545"];
 
 function Home() {
 
@@ -19,7 +15,8 @@ function Home() {
     formulas: 0,
     categories: 0,
     lowStock: [],
-    recentFormulas: []
+    recentFormulas: [],
+    categoryStats: []
   });
 
   const user = JSON.parse(localStorage.getItem("user") || "{}");
@@ -30,147 +27,269 @@ function Home() {
   }, []);
 
   const loadDashboard = async () => {
+
     try {
 
       const res = await API.get("/dashboard");
+
       setStats(res.data);
 
-    } catch (err) {
-      console.error(err);
+    } catch (error) {
+
+      console.error("Dashboard load error:", error);
+
     }
+
   };
 
-  const chartData = [
-    { name: "Floral", value: 5 },
-    { name: "Citrus", value: 3 },
-    { name: "Woody", value: 4 },
-    { name: "Oriental", value: 2 }
-  ];
-
-  const columns = [
-    { title: "Chemical", dataIndex: "name" },
-    { title: "Stock", dataIndex: "stock" }
-  ];
-
   return (
-    <div style={{ padding: 24 }}>
 
-      {/* HERO SECTION */}
-      <Card
+    <div className="container-fluid mt-3">
+
+      {/* HERO */}
+
+      <div className="card text-white mb-4"
         style={{
-          marginBottom: 30,
-          background: "linear-gradient(120deg,#4facfe,#00f2fe)",
-          color: "white"
+          background:"linear-gradient(120deg,#4facfe,#00f2fe)"
         }}
       >
-        <h1>Welcome back, {firstName} 👋</h1>
-        <p>Create beautiful fragrances with AI powered tools.</p>
+        <div className="card-body">
 
-        <Button
-          type="primary"
-          icon={<ExperimentOutlined />}
-          style={{ marginRight: 10 }}
-          onClick={() => navigate("/admin/ai-formula")}
-        >
-          Generate AI Formula
-        </Button>
+          <h2>Welcome back, {firstName} 👋</h2>
+          <p>Manage fragrance inventory and production efficiently.</p>
 
-        <Button
-          icon={<PlusOutlined />}
-          style={{ marginRight: 10 }}
-          onClick={() => navigate("/admin/formula")}
-        >
-          Create Formula
-        </Button>
+          <div className="mt-3">
 
-        <Button
-          icon={<DatabaseOutlined />}
-          onClick={() => navigate("/admin/inventory")}
-        >
-          Add Chemical
-        </Button>
+            <button
+              className="btn btn-light me-2"
+              onClick={() => navigate("/admin/ai-formula")}
+            >
+              Generate AI Formula
+            </button>
 
-      </Card>
+            <button
+              className="btn btn-outline-light me-2"
+              onClick={() => navigate("/admin/formula")}
+            >
+              Create Formula
+            </button>
 
-      {/* STATISTICS */}
-      <Row gutter={16} style={{ marginBottom: 30 }}>
+            <button
+              className="btn btn-outline-light"
+              onClick={() => navigate("/admin/inventory")}
+            >
+              Add Chemical
+            </button>
 
-        <Col span={6}>
-          <Card>
-            <h3>Total Chemicals</h3>
-            <h1>{stats.chemicals}</h1>
-          </Card>
-        </Col>
+          </div>
 
-        <Col span={6}>
-          <Card>
-            <h3>Total Formulas</h3>
-            <h1>{stats.formulas}</h1>
-          </Card>
-        </Col>
+        </div>
+      </div>
 
-        <Col span={6}>
-          <Card>
-            <h3>Categories</h3>
-            <h1>{stats.categories}</h1>
-          </Card>
-        </Col>
+      {/* STAT CARDS */}
 
-        
+      <div className="row mb-4">
 
-      </Row>
+        <div className="col-md-4">
 
-      <Row gutter={16}>
+          <div className="card shadow-sm">
 
-        {/* CHART */}
-        <Col span={8}>
-          <Card title="Formula Distribution">
+            <div className="card-body">
 
-            <ResponsiveContainer width="100%" height={250}>
-              <PieChart>
-                <Pie
-                  data={chartData}
-                  dataKey="value"
-                  outerRadius={80}
-                >
-                  {chartData.map((entry, index) => (
-                    <Cell
-                      key={index}
-                      fill={COLORS[index % COLORS.length]}
-                    />
-                  ))}
-                </Pie>
+              <h6>Total Chemicals</h6>
+              <h2>{stats.chemicals}</h2>
 
-                <Tooltip />
-              </PieChart>
-            </ResponsiveContainer>
+            </div>
 
-          </Card>
-        </Col>
+          </div>
+
+        </div>
+
+        <div className="col-md-4">
+
+          <div className="card shadow-sm">
+
+            <div className="card-body">
+
+              <h6>Total Formulas</h6>
+              <h2>{stats.formulas}</h2>
+
+            </div>
+
+          </div>
+
+        </div>
+
+        <div className="col-md-4">
+
+          <div className="card shadow-sm">
+
+            <div className="card-body">
+
+              <h6>Total Categories</h6>
+              <h2>{stats.categories}</h2>
+
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
+
+      {/* MAIN GRID */}
+
+      <div className="row">
+
+        {/* CATEGORY CHART */}
+
+        <div className="col-md-4 mb-4">
+
+          <div className="card shadow-sm">
+
+            <div className="card-header">
+              Category Distribution
+            </div>
+
+            <div className="card-body">
+
+              <ResponsiveContainer width="100%" height={250}>
+
+                <PieChart>
+
+                  <Pie
+                    data={stats.categoryStats || []}
+                    dataKey="value"
+                    nameKey="name"
+                    outerRadius={80}
+                  >
+
+                    {(stats.categoryStats || []).map((entry, index) => (
+
+                      <Cell
+                        key={index}
+                        fill={COLORS[index % COLORS.length]}
+                      />
+
+                    ))}
+
+                  </Pie>
+
+                  <Tooltip/>
+
+                </PieChart>
+
+              </ResponsiveContainer>
+
+            </div>
+
+          </div>
+
+        </div>
 
         {/* LOW STOCK */}
-        
+
+        <div className="col-md-4 mb-4">
+
+          <div className="card shadow-sm">
+
+            <div className="card-header">
+              Low Stock Chemicals
+            </div>
+
+            <div className="card-body">
+
+              <table className="table table-sm">
+
+                <thead>
+
+                  <tr>
+                    <th>Chemical</th>
+                    <th>Stock</th>
+                  </tr>
+
+                </thead>
+
+                <tbody>
+
+                  {stats.lowStock?.length === 0 && (
+
+                    <tr>
+                      <td colSpan="2">No low stock items</td>
+                    </tr>
+
+                  )}
+
+                  {stats.lowStock?.map(item => (
+
+                    <tr key={item._id}>
+
+                      <td>{item.name}</td>
+                      <td className="text-danger">
+                        {item.stock}
+                      </td>
+
+                    </tr>
+
+                  ))}
+
+                </tbody>
+
+              </table>
+
+            </div>
+
+          </div>
+
+        </div>
 
         {/* RECENT FORMULAS */}
-        <Col span={8}>
-          <Card title="Recent Formulas">
 
-            <List
-              dataSource={stats.recentFormulas}
-              renderItem={(item) => (
-                <List.Item>
-                  {item.name}
-                </List.Item>
-              )}
-            />
+        <div className="col-md-4 mb-4">
 
-          </Card>
-        </Col>
+          <div className="card shadow-sm">
 
-      </Row>
+            <div className="card-header">
+              Recent Formulas
+            </div>
+
+            <div className="card-body">
+
+              <ul className="list-group list-group-flush">
+
+                {stats.recentFormulas?.length === 0 && (
+                  <li className="list-group-item">
+                    No formulas created
+                  </li>
+                )}
+
+                {stats.recentFormulas?.map(formula => (
+
+                  <li
+                    className="list-group-item"
+                    key={formula._id}
+                  >
+
+                    {formula.name}
+
+                  </li>
+
+                ))}
+
+              </ul>
+
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
 
     </div>
+
   );
+
 }
 
 export default Home;

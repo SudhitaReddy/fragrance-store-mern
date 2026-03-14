@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Card, Input, Button, Typography, Divider, message } from "antd";
 import API from "../../api/api";
 import { useNavigate } from "react-router-dom";
@@ -12,6 +12,53 @@ function GenerateAI() {
   const [prompt, setPrompt] = useState("");
   const [formula, setFormula] = useState("");
   const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+
+  if (!location.state?.formula) return;
+
+  const text = location.state.formula;
+  setFormulaText(text);
+
+  const lines = text.split("\n");
+
+  const parsed = lines.map(line => {
+    const match = line.match(/(.+)-\s*(\d+)%/);
+
+    if (match) {
+      return {
+        name: match[1].trim(),
+        percent: Number(match[2])
+      };
+    }
+
+    return null;
+  }).filter(Boolean);
+
+  const merged = parsed.map(p => {
+
+    const existing = chemicals.find(
+      c => c.name.toLowerCase() === p.name.toLowerCase()
+    );
+
+    if (existing) {
+      return {
+        ...existing,
+        percent: p.percent
+      };
+    }
+
+    // 🔥 Chemical not in inventory
+    return {
+      _id: `temp-${p.name}`,
+      name: p.name,
+      percent: p.percent
+    };
+  });
+
+  setChemicals(merged);
+
+}, [location.state]);
 
   const generateFormula = async () => {
     try {

@@ -1,21 +1,54 @@
-
 import React from "react";
-import { Form, InputNumber, Button } from "antd";
+import { Card, Row, Col, Button } from "antd";
+import { useNavigate } from "react-router-dom";
 
 function Settings() {
-  return (
-    <Form layout="vertical">
-      <Form.Item label="Default Strength (%)">
-        <InputNumber defaultValue={20} />
-      </Form.Item>
 
-      <Form.Item label="Low Stock Alert (ml)">
-        <InputNumber defaultValue={50} />
-      </Form.Item>
+const navigate = useNavigate();
 
-      <Button type="primary">Save Settings</Button>
-    </Form>
-  );
+return (
+
+<div style={{ padding: 20 }}>
+
+<h2>System Settings</h2>
+
+<Row gutter={16}>
+
+<Col span={8}>
+<Card title="Hardware Inventory">
+<p>Manage funnels, bottles, tubes and other lab tools.</p>
+
+<Button
+type="primary"
+onClick={() => navigate("/admin/settings/hardware")}
+>
+Open
+</Button>
+
+</Card>
+</Col>
+
+<Col span={8}>
+<Card title="Recycle Bin">
+<p>Restore or permanently delete removed records.</p>
+
+<Button
+type="primary"
+danger
+onClick={() => navigate("/admin/settings/recycle")}
+>
+Open
+</Button>
+
+</Card>
+</Col>
+
+</Row>
+
+</div>
+
+);
+
 }
 
 export default Settings;

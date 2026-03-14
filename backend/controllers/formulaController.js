@@ -1,4 +1,5 @@
 const Formula = require("../models/Formula");
+const Chemical = require("../models/Chemical");
 
 // 🔥 Create Formula (Auto Version + User Based)
 exports.createFormula = async (req, res) => {
@@ -110,18 +111,102 @@ exports.copyFormula = async (req, res) => {
 // 🔥 Soft Delete Formula
 exports.deleteFormula = async (req, res) => {
   try {
+
     const { id } = req.params;
 
     const formula = await Formula.findById(id);
 
     if (!formula) {
+      return res.status(404).json({
+        success: false,
+        message: "Formula not found"
+      });
+    }
+
+    // Move formula to recycle bin
+    formula.isDeleted = true;
+    formula.deletedAt = new Date();
+
+    await formula.save();
+
+    res.json({
+      success: true,
+      message: "Formula moved to recycle bin"
+    });
+
+  } catch (error) {
+
+    console.error("Delete formula error:", error);
+
+    res.status(500).json({
+      success: false,
+      message: "Server error"
+    });
+
+  }
+};
+
+// 🔥 View Single Formula
+exports.getFormulaById = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const formula = await Formula.findOne({
+      _id: id,
+      user: req.user._id,
+      isDeleted: false,
+    }).populate("chemicals.chemicalId");
+
+    if (!formula) {
       return res.status(404).json({ msg: "Formula not found" });
     }
 
-    formula.isDeleted = true;
-    await formula.save();
+    res.json(formula);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
 
-    res.json({ msg: "Formula deleted successfully" });
+
+
+// 🔥 Produce Formula (Deduct Inventory)
+exports.produceFormula = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { quantity } = req.body; // ml to produce
+
+    const formula = await Formula.findById(id)
+      .populate("chemicals.chemicalId");
+
+    if (!formula) {
+      return res.status(404).json({ msg: "Formula not found" });
+    }
+
+    for (const item of formula.chemicals) {
+
+      if (!item.chemicalId) continue;
+
+      const usedAmount = (quantity * item.percent) / 100;
+
+      const chemical = await Chemical.findById(item.chemicalId._id);
+
+      if (!chemical) continue;
+
+      if (chemical.stock < usedAmount) {
+        return res.status(400).json({
+          msg: `Not enough stock for ${chemical.name}`,
+        });
+      }
+
+      chemical.stock -= usedAmount;
+
+      await chemical.save();
+    }
+
+    res.json({
+      msg: "Production successful",
+    });
+
   } catch (error) {
     res.status(500).json({ message: error.message });
   }

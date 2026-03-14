@@ -7,19 +7,44 @@ const categorySchema = new mongoose.Schema(
       required: true,
       trim: true,
     },
+
     description: {
       type: String,
       default: "",
     },
+
+    // 🎨 category color for UI
+    color: {
+      type: String,
+      default: "#1890ff",
+    },
+
+    // optional icon (future UI improvement)
+    icon: {
+      type: String,
+      default: "",
+    },
+
     isActive: {
       type: Boolean,
       default: true,
     },
+
     user: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "User",
-      required: true,
+      ref: "User",    
     },
+
+    isDeleted: {
+    type: Boolean,
+    default: false
+  },
+
+  deletedAt: {
+    type: Date,
+    default: null
+  },
+  
   },
   { timestamps: true }
 );

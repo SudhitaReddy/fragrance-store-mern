@@ -22,9 +22,14 @@ const formulaSchema = new mongoose.Schema({
   ],
 
   isDeleted: {
-  type: Boolean,
-  default: false,
-}
+    type: Boolean,
+    default: false
+  },
+
+  deletedAt: {
+    type: Date,
+    default: null
+  },
 }, { timestamps: true });
 
 module.exports = mongoose.model("Formula", formulaSchema);

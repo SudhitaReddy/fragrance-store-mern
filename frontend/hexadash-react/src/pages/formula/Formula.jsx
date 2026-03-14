@@ -12,59 +12,39 @@ function Formula() {
 
   // ✅ Load only selected chemicals
 useEffect(() => {
-  if (location.state?.formula && chemicals.length > 0) {
+  if (!location.state?.formula) return;
 
-    const text = location.state.formula;
-    setFormulaText(text);
+  const text = location.state.formula;
+  setFormulaText(text);
 
-    const lines = text.split("\n");
+  const lines = text.split("\n");
 
-    const parsed = lines.map(line => {
+  const parsed = lines
+    .map((line) => {
       const match = line.match(/(.+)-\s*(\d+)%/);
 
       if (match) {
         return {
-          name: match[1].trim().toLowerCase(),
-          percent: Number(match[2])
+          _id: `temp-${match[1].trim()}`, // allow chemicals not in inventory
+          name: match[1].trim(),
+          percent: Number(match[2]),
         };
       }
 
       return null;
-    }).filter(Boolean);
+    })
+    .filter(Boolean);
 
-   const updatedChemicals = chemicals.map(c => {
-
-  const found = parsed.find(p =>
-    c.name.toLowerCase() === p.name.toLowerCase()
-  );
-
-  if (found) {
-    return { ...c, percent: found.percent };
-  }
-
-  return { ...c, percent: 0 };
-});
-
-    setChemicals(updatedChemicals);
-
-  }
-}, [location, chemicals]);
+  setChemicals(parsed);
+}, [location.state]);
 
 useEffect(() => {
-  const fetchChemicals = async () => {
-    try {
-      const res = await API.get("/chemicals");
-      const data = res.data.map(c => ({
-        ...c,
-        percent: 0
-      }));
-      setChemicals(data);
-    } catch (err) {
-      console.error(err);
-    }
-  };
+  const stored =
+    JSON.parse(localStorage.getItem("selectedChemicals")) || [];
 
-  fetchChemicals();
+  if (stored.length > 0) {
+    setChemicals(stored);
+  }
 }, []);
   
 
@@ -139,8 +119,9 @@ const autoBalanceTo100 = () => {
         chemicals: chemicals
           .filter(c => c.percent > 0)
           .map(c => ({
-            chemicalId: c._id,
-            percent: c.percent,
+            chemicalId: c._id.startsWith("temp") ? null : c._id,
+            name: c.name,
+            percent: c.percent
           })),
       });
 
@@ -156,8 +137,35 @@ const autoBalanceTo100 = () => {
     }
   };
 
+  const removeChemical = (id) => {
+
+  const updated = chemicals.filter(c => c._id !== id);
+
+  setChemicals(updated);
+
+  localStorage.setItem(
+    "selectedChemicals",
+    JSON.stringify(updated)
+  );
+};
+
   const columns = [
-    { title: "Chemical", dataIndex: "name" },
+    {
+      title: "Chemical",
+      dataIndex: "name",
+      render: (_, record) => (
+        <div
+          style={{
+            background: record.category?.color || "#f5f5f5",
+            padding: "6px 10px",
+            borderRadius: 6,
+            fontWeight: 500
+          }}
+        >
+          {record.name}
+        </div>
+      )
+    },
     {
       title: "Percentage (%)",
       render: (_, record) => (
@@ -171,10 +179,30 @@ const autoBalanceTo100 = () => {
         />
       ),
     },
+    {
+    title: "Remove",
+    render: (_, record) => (
+      <Button
+        danger
+        size="small"
+        onClick={() => removeChemical(record._id)}
+      >
+        Remove
+      </Button>
+    )
+  },
   ];
 
+
+
   return (
-    <div style={{ padding: 20 }}>
+        <div
+      style={{
+        padding: "30px 40px",
+        maxWidth: 900,
+        margin: "auto"
+      }}
+    >
       <h2>Create Formula</h2>
 
       <Input
