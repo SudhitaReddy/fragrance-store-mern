@@ -1,15 +1,45 @@
-import React, { useState } from "react";
-import { Form, Input, InputNumber, Button, Card, Row, Col, message } from "antd";
+import React, { useState, useEffect } from "react";
+import {
+  Form,
+  Input,
+  InputNumber,
+  Button,
+  Card,
+  Row,
+  Col,
+  message,
+  Select,
+} from "antd";
 import { useNavigate } from "react-router-dom";
 import API from "../../api/api";
 
 const AddChemical = () => {
   const [loading, setLoading] = useState(false);
+  const [categories, setCategories] = useState([]);
+
   const navigate = useNavigate();
 
+  // ✅ Fetch categories
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const res = await API.get("/categories");
+        setCategories(res.data.data || res.data);
+      } catch (error) {
+        console.error(error);
+        message.error("Failed to load categories");
+      }
+    };
+
+    fetchCategories();
+  }, []);
+
+  // ✅ Submit
   const handleSubmit = async (values) => {
     try {
       setLoading(true);
+
+      console.log("Submitting:", values); // 🔍 debug
 
       await API.post("/chemicals", values);
 
@@ -36,6 +66,7 @@ const AddChemical = () => {
         >
           <Form layout="vertical" onFinish={handleSubmit}>
             
+            {/* NAME */}
             <Form.Item
               label="Chemical Name"
               name="name"
@@ -46,16 +77,24 @@ const AddChemical = () => {
               <Input placeholder="Example: Lemon Oil" />
             </Form.Item>
 
+            {/* CATEGORY (FIXED) */}
             <Form.Item
               label="Category"
               name="category"
               rules={[
-                { required: true, message: "Please enter category" },
+                { required: true, message: "Please select category" },
               ]}
             >
-              <Input placeholder="Example: Citrus / Essential Oil" />
+              <Select placeholder="Select Category">
+                {categories.map((c) => (
+                  <Select.Option key={c._id} value={c._id}>
+                    {c.name}
+                  </Select.Option>
+                ))}
+              </Select>
             </Form.Item>
 
+            {/* STOCK */}
             <Form.Item
               label="Stock (ml)"
               name="stock"
@@ -70,10 +109,14 @@ const AddChemical = () => {
               />
             </Form.Item>
 
+            {/* BUTTONS */}
             <Form.Item>
               <Row gutter={10}>
                 <Col span={12}>
-                  <Button block onClick={() => navigate("/admin/inventory")}>
+                  <Button
+                    block
+                    onClick={() => navigate("/admin/inventory")}
+                  >
                     Cancel
                   </Button>
                 </Col>

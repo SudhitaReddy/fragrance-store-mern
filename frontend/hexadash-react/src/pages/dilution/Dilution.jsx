@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Card, Row, Col, InputNumber, Select, Button, Tag } from "antd";
 import { useNavigate }  from "react-router-dom";
+import { message } from "antd";
 import API from "../../api/api";
 
 const { Option } = Select;
@@ -55,7 +56,7 @@ function Dilution() {
         strength
       });
 
-      alert("Dilution created");
+      message.success("Dilution created");
 
       fetchChemicals(); // refresh inventory
 
@@ -71,13 +72,23 @@ function Dilution() {
   return (
     <div style={{ padding: 20 }}>
 
-      <h2>Dilution Lab</h2>
+      <div style={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          marginBottom: 20
+        }}>
+
+          <h2>Dilution Lab</h2>
+
           <Button
             type="primary"
             onClick={() => navigate("/admin/dilution/history")}
-            >
-            View Dilutions
+          >
+            📋 View All Dilutions
           </Button>
+
+        </div>
 
       <div style={{ marginBottom: 20 }}>
         <Select

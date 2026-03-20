@@ -27,6 +27,7 @@ const RecycleBin = lazy(() => import("../../pages/settings/RecycleBin"));
 const AddHardware = lazy(() => import("../../pages/settings/AddHardware"));
 const EditHardware = lazy(() => import("../../pages/settings/EditHardware"));
 const HardwareInventory = lazy(() => import("../../pages/settings/HardwareInventory"));
+const AdjustHardware = lazy(() => import("../../pages/settings/AdjustHardware"));
 
 const Admin = React.memo(() => {
   const { pathname } = useLocation();
@@ -75,6 +76,7 @@ const Admin = React.memo(() => {
         <Route path="settings/hardware" element={<HardwareInventory />} />
         <Route path="settings/hardware/add" element={<AddHardware />} />
         <Route path="settings/hardware/edit/:id" element={<EditHardware />} />
+        <Route path="settings/hardware/adjust/:id" element={<AdjustHardware />} />
 
 
         <Route path="*" element={<NotFound />} />

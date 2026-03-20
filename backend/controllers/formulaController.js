@@ -6,22 +6,23 @@ exports.createFormula = async (req, res) => {
   try {
     const { name, chemicals } = req.body;
 
-    // Count existing versions for same user
-    const existing = await Formula.find({
-      name,
-      user: req.user._id,
-    });
-
-    const newVersion = existing.length + 1;
+    // 🔥 ADD THIS (VERY IMPORTANT)
+   const formattedChemicals = chemicals.map((c, index) => ({
+  chemicalId: c.chemicalId || null,
+  name: c.name?.trim() || `Chemical ${index + 1}`, // ✅ FIX
+  percent: c.percent
+}));
 
     const formula = await Formula.create({
       name,
-      chemicals,
-      version: newVersion,
+      chemicals: formattedChemicals, // ✅ USE THIS
+      version: 1,
       user: req.user._id,
+      parentFormula: null
     });
 
     res.status(201).json(formula);
+
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -47,30 +48,41 @@ exports.editFormula = async (req, res) => {
     const { id } = req.params;
     const { chemicals } = req.body;
 
-    // Find existing formula
     const existingFormula = await Formula.findById(id);
 
     if (!existingFormula) {
       return res.status(404).json({ msg: "Formula not found" });
     }
 
-    // Count versions for same name + user
+    const parentId = existingFormula.parentFormula || existingFormula._id;
+
     const existingVersions = await Formula.find({
-      name: existingFormula.name,
-      user: req.user._id,
+      $or: [
+        { _id: parentId },
+        { parentFormula: parentId }
+      ],
+      user: req.user._id
     });
 
     const newVersion = existingVersions.length + 1;
 
-    // Create new version
+    // 🔥 ADD THIS (VERY IMPORTANT)
+    const formattedChemicals = chemicals.map((c, index) => ({
+  chemicalId: c.chemicalId || null,
+  name: c.name?.trim() || `Chemical ${index + 1}`, // ✅ FIX
+  percent: c.percent
+}));
+
     const newFormula = await Formula.create({
       name: existingFormula.name,
       version: newVersion,
-      chemicals,
+      chemicals: formattedChemicals, // ✅ USE THIS
       user: req.user._id,
+      parentFormula: parentId
     });
 
     res.json(newFormula);
+
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -167,6 +179,33 @@ exports.getFormulaById = async (req, res) => {
   }
 };
 
+exports.getFormulaVersions = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const formula = await Formula.findById(id);
+
+    if (!formula) {
+      return res.status(404).json({ msg: "Formula not found" });
+    }
+
+    const parentId = formula.parentFormula || formula._id;
+
+    const versions = await Formula.find({
+      $or: [
+        { _id: parentId },
+        { parentFormula: parentId }
+      ],
+      user: req.user._id
+    })
+    .sort({ version: -1 });
+
+    res.json(versions);
+
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
 
 
 // 🔥 Produce Formula (Deduct Inventory)

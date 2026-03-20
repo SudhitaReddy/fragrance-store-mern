@@ -28,7 +28,7 @@ const handleSubmit = async (e) => {
     // Save user
     localStorage.setItem("user", JSON.stringify(res.data.user));
 
-    navigate("/admin/dashboard");
+    navigate("/Home");
 
   } catch (err) {
     console.log("Login error:", err.response?.data);

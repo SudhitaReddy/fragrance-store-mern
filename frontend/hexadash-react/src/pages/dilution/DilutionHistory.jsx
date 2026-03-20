@@ -106,21 +106,35 @@ function DilutionHistory() {
 
 ];
 
-  return (
+ return (
+  <div style={{ padding: 20 }}>
 
-    <div style={{ padding: 20 }}>
-
+    {/* HEADER */}
+    <div style={{
+      display: "flex",
+      justifyContent: "space-between",
+      alignItems: "center",
+      marginBottom: 20
+    }}>
       <h2>Dilution History</h2>
 
-      <Table
-        columns={columns}
-        dataSource={dilutions}
-        rowKey="_id"
-      />
-
+      <Button
+        type="primary"
+        onClick={() => navigate("/admin/dilution")}
+      >
+        ➕ Create Dilution
+      </Button>
     </div>
 
-  );
+    {/* 🔥 TABLE (THIS WAS MISSING) */}
+    <Table
+      columns={columns}
+      dataSource={dilutions}
+      rowKey="_id"
+    />
+
+  </div>
+);
 
 }
 

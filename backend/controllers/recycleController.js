@@ -2,6 +2,7 @@ const Chemical = require("../models/Chemical");
 const Category = require("../models/Category");
 const Formula = require("../models/Formula");
 const Dilution = require("../models/Dilution");
+const Hardware = require("../models/Hardware");
 
 
 /*
@@ -9,16 +10,13 @@ GET ALL RECYCLE BIN DATA
 */
 
 exports.getRecycleBin = async (req, res) => {
-
   try {
 
     const chemicals = await Chemical.find({ isDeleted: true });
-
     const categories = await Category.find({ isDeleted: true });
-
     const formulas = await Formula.find({ isDeleted: true });
-
     const dilutions = await Dilution.find({ isDeleted: true });
+    const hardware = await Hardware.find({ isDeleted: true }); // 🔥 ADD THIS
 
     res.json({
       success: true,
@@ -26,7 +24,8 @@ exports.getRecycleBin = async (req, res) => {
         chemicals,
         categories,
         formulas,
-        dilutions
+        dilutions,
+        hardware   // 🔥 VERY IMPORTANT
       }
     });
 
@@ -40,7 +39,6 @@ exports.getRecycleBin = async (req, res) => {
     });
 
   }
-
 };
 
 
@@ -61,6 +59,7 @@ exports.restoreItem = async (req, res) => {
     if (type === "category") Model = Category;
     if (type === "formula") Model = Formula;
     if (type === "dilution") Model = Dilution;
+    if (type === "hardware") Model = Hardware;
 
     if (!Model) {
       return res.status(400).json({
@@ -108,7 +107,6 @@ PERMANENT DELETE
 */
 
 exports.permanentDelete = async (req, res) => {
-
   try {
 
     const { type, id } = req.params;
@@ -119,6 +117,7 @@ exports.permanentDelete = async (req, res) => {
     if (type === "category") Model = Category;
     if (type === "formula") Model = Formula;
     if (type === "dilution") Model = Dilution;
+    if (type === "hardware") Model = Hardware; // 🔥 FIX
 
     if (!Model) {
       return res.status(400).json({
@@ -144,7 +143,6 @@ exports.permanentDelete = async (req, res) => {
     });
 
   }
-
 };
 
 

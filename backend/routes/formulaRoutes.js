@@ -7,7 +7,8 @@ const {
   copyFormula,
   deleteFormula,
   getFormulaById,
-  produceFormula
+  produceFormula,
+  getFormulaVersions
 
 } = require("../controllers/formulaController");
 
@@ -20,5 +21,6 @@ router.post("/copy/:id", protect, copyFormula);
 router.delete("/:id", protect, deleteFormula);
 router.get("/:id", protect, getFormulaById);
 router.post("/produce/:id", protect, produceFormula);
+router.get("/versions/:id", protect, getFormulaVersions);
 
 module.exports = router;
