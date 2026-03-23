@@ -1,90 +1,78 @@
 const Dilution = require("../models/Dilution");
 const Chemical = require("../models/Chemical");
 
+const TOTAL_VOLUME = 100;
 
 // CREATE DILUTION
-exports.createDilution = async (req, res) => {
+const createDilution = async (req, res) => {
   try {
+    let { chemicalId, oilAmount } = req.body;
 
-    const { chemicalId, oilAmount, strength } = req.body;
+    oilAmount = Number(oilAmount);
 
-    const oil = Number(oilAmount);
-    const percent = Number(strength);
+    if (!chemicalId || isNaN(oilAmount)) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid input"
+      });
+    }
 
-    const chemical = await Chemical.findById(chemicalId)
-      .populate("category");
+    if (oilAmount > TOTAL_VOLUME) {
+      return res.status(400).json({
+        success: false,
+        message: "Oil cannot exceed 100 ml"
+      });
+    }
+
+    const chemical = await Chemical.findById(chemicalId);
 
     if (!chemical) {
       return res.status(404).json({
+        success: false,
         message: "Chemical not found"
       });
     }
 
-    const alcoholAmount = oil * ((100 - percent) / percent);
-    const totalVolume = oil + alcoholAmount;
-
-    if (chemical.stock < oil) {
+    if (chemical.stock < oilAmount) {
       return res.status(400).json({
-        message: "Not enough stock"
+        success: false,
+        message: "Insufficient stock"
       });
     }
 
-    chemical.stock -= oil;
+    const alcoholAmount = TOTAL_VOLUME - oilAmount;
+
+    // Deduct stock
+    chemical.stock -= oilAmount;
     await chemical.save();
 
     const dilution = await Dilution.create({
-      chemical: chemical._id,
+      chemical: chemicalId,
       chemicalName: chemical.name,
-      category: chemical.category?._id,
-      oilAmount: oil,
+      category: chemical.category,
+      oilAmount,
       alcoholAmount,
-      strength: percent,
-      totalVolume,
-      batchNumber: `DIL-${Date.now()}`
+      totalVolume: TOTAL_VOLUME,
+      batchNumber: `BATCH-${Date.now()}`
     });
 
-    res.json({
+    res.status(201).json({
       success: true,
       data: dilution
     });
 
   } catch (error) {
-    console.error("Create dilution error:", error);
+    console.error("🔥 Dilution Error:", error);
     res.status(500).json({
+      success: false,
       message: "Server error"
     });
   }
 };
 
-exports.getDilutionById = async (req, res) => {
+// GET ALL DILUTIONS
+const getDilutions = async (req, res) => {
   try {
-
-    const dilution = await Dilution
-      .findById(req.params.id)
-      .populate("chemical", "name category");
-
-    if (!dilution) {
-      return res.status(404).json({
-        message: "Dilution not found"
-      });
-    }
-
-    res.json({
-      success: true,
-      data: dilution
-    });
-
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: "Server error" });
-  }
-};
-
-// GET DILUTIONS
-exports.getDilutions = async (req, res) => {
-
-  try {
-
     const dilutions = await Dilution
       .find({ isDeleted: { $ne: true } })
       .populate("chemical", "name category");
@@ -95,37 +83,63 @@ exports.getDilutions = async (req, res) => {
     });
 
   } catch (error) {
-
     console.error(error);
-
     res.status(500).json({
       success: false,
       message: "Server error"
     });
-
   }
-
 };
 
-exports.updateDilution = async (req, res) => {
-
+// GET SINGLE DILUTION
+const getDilutionById = async (req, res) => {
   try {
+    const dilution = await Dilution
+      .findById(req.params.id)
+      .populate("chemical", "name category");
+
+    if (!dilution) {
+      return res.status(404).json({
+        success: false,
+        message: "Dilution not found"
+      });
+    }
+
+    res.json({
+      success: true,
+      data: dilution
+    });
+
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Server error" });
+  }
+};
+
+// UPDATE DILUTION
+const updateDilution = async (req, res) => {
+  try {
+    let { oilAmount } = req.body;
+    oilAmount = Number(oilAmount);
+
+    if (isNaN(oilAmount) || oilAmount > TOTAL_VOLUME) {
+      return res.status(400).json({
+        message: "Invalid oil amount"
+      });
+    }
 
     const dilution = await Dilution.findById(req.params.id);
 
     if (!dilution) {
-      return res.status(404).json({ message: "Dilution not found" });
+      return res.status(404).json({
+        message: "Dilution not found"
+      });
     }
 
     const chemical = await Chemical.findById(dilution.chemical);
 
-    // restore old oil
+    // Restore old stock
     chemical.stock += dilution.oilAmount;
-
-    const { oilAmount, strength } = req.body;
-
-    const alcoholAmount = oilAmount * ((100 - strength) / strength);
-    const totalVolume = oilAmount + alcoholAmount;
 
     if (chemical.stock < oilAmount) {
       return res.status(400).json({
@@ -133,14 +147,15 @@ exports.updateDilution = async (req, res) => {
       });
     }
 
-    chemical.stock -= oilAmount;
+    const alcoholAmount = TOTAL_VOLUME - oilAmount;
 
+    // Deduct new stock
+    chemical.stock -= oilAmount;
     await chemical.save();
 
     dilution.oilAmount = oilAmount;
     dilution.alcoholAmount = alcoholAmount;
-    dilution.totalVolume = totalVolume;
-    dilution.strength = strength;
+    dilution.totalVolume = TOTAL_VOLUME;
 
     await dilution.save();
 
@@ -153,13 +168,11 @@ exports.updateDilution = async (req, res) => {
     console.error(error);
     res.status(500).json({ message: "Server error" });
   }
-
 };
 
-exports.deleteDilution = async (req, res) => {
-
+// DELETE DILUTION (SOFT DELETE)
+const deleteDilution = async (req, res) => {
   try {
-
     const dilution = await Dilution.findById(req.params.id);
 
     if (!dilution) {
@@ -169,7 +182,6 @@ exports.deleteDilution = async (req, res) => {
       });
     }
 
-    // Restore chemical stock
     const chemical = await Chemical.findById(dilution.chemical);
 
     if (chemical) {
@@ -177,7 +189,6 @@ exports.deleteDilution = async (req, res) => {
       await chemical.save();
     }
 
-    // Move dilution to recycle bin
     dilution.isDeleted = true;
     dilution.deletedAt = new Date();
 
@@ -185,18 +196,22 @@ exports.deleteDilution = async (req, res) => {
 
     res.json({
       success: true,
-      message: "Dilution moved to recycle bin and stock restored"
+      message: "Moved to recycle bin & stock restored"
     });
 
   } catch (error) {
-
     console.error("Delete dilution error:", error);
-
     res.status(500).json({
       success: false,
       message: "Server error"
     });
-
   }
+};
 
+module.exports = {
+  createDilution,
+  getDilutions,
+  getDilutionById,
+  updateDilution,
+  deleteDilution
 };

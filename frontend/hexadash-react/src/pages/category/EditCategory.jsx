@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { SketchPicker } from "react-color";
+import { Button } from "antd";
+import EmojiPicker from "emoji-picker-react";
 import API from "../../api/api";
 import "bootstrap/dist/css/bootstrap.min.css";
 
@@ -17,6 +19,7 @@ function EditCategory() {
   });
 
   const [loading, setLoading] = useState(false);
+  const [showEmoji, setShowEmoji] = useState(false);
 
   useEffect(() => {
     fetchCategory();
@@ -24,9 +27,7 @@ function EditCategory() {
 
   const fetchCategory = async () => {
     try {
-
       const { data } = await API.get(`/categories/${id}`);
-
       const cat = data.data || data;
 
       setCategory({
@@ -48,7 +49,7 @@ function EditCategory() {
     });
   };
 
-  // COLOR CHANGE
+  // 🎨 COLOR CHANGE
   const handleColorChange = (color) => {
     setCategory({
       ...category,
@@ -60,13 +61,11 @@ function EditCategory() {
     e.preventDefault();
 
     try {
-
       setLoading(true);
 
       await API.put(`/categories/${id}`, category);
 
       alert("Category updated");
-
       navigate("/admin/category");
 
     } catch (error) {
@@ -90,6 +89,7 @@ function EditCategory() {
 
           <form onSubmit={handleSubmit}>
 
+            {/* NAME */}
             <div className="mb-3">
               <label className="form-label">Category Name</label>
               <input
@@ -102,6 +102,7 @@ function EditCategory() {
               />
             </div>
 
+            {/* DESCRIPTION */}
             <div className="mb-3">
               <label className="form-label">Description</label>
               <input
@@ -113,20 +114,53 @@ function EditCategory() {
               />
             </div>
 
+            {/* 🔥 EMOJI PICKER */}
             <div className="mb-3">
               <label className="form-label">Icon</label>
-              <input
-                type="text"
-                className="form-control"
-                name="icon"
-                placeholder="Example: 🍋 🌸 🌳"
-                value={category.icon}
-                onChange={handleChange}
-              />
+
+              <div className="d-flex gap-3 align-items-center">
+
+                {/* PREVIEW BOX */}
+                <div
+                  style={{
+                    width: 60,
+                    height: 60,
+                    borderRadius: 12,
+                    background: category.color,
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    fontSize: 24,
+                    color: "#fff"
+                  }}
+                >
+                  {category.icon || "😀"}
+                </div>
+
+                {/* BUTTON */}
+                <Button onClick={() => setShowEmoji(!showEmoji)}>
+                  Select Emoji
+                </Button>
+
+              </div>
+
+              {/* EMOJI PICKER */}
+              {showEmoji && (
+                <div style={{ marginTop: 10 }}>
+                  <EmojiPicker
+                    onEmojiClick={(emojiData) => {
+                      setCategory({
+                        ...category,
+                        icon: emojiData.emoji,
+                      });
+                      setShowEmoji(false);
+                    }}
+                  />
+                </div>
+              )}
             </div>
 
-            {/* COLOR PICKER */}
-
+            {/* 🎨 COLOR PICKER */}
             <div className="mb-3">
               <label className="form-label">Category Color</label>
 
@@ -152,6 +186,7 @@ function EditCategory() {
 
             </div>
 
+            {/* ACTIONS */}
             <div className="d-flex justify-content-between">
 
               <button

@@ -28,6 +28,7 @@ const AddHardware = lazy(() => import("../../pages/settings/AddHardware"));
 const EditHardware = lazy(() => import("../../pages/settings/EditHardware"));
 const HardwareInventory = lazy(() => import("../../pages/settings/HardwareInventory"));
 const AdjustHardware = lazy(() => import("../../pages/settings/AdjustHardware"));
+const UserProfile = lazy(() => import("../../pages/settings/UserProfile"));
 
 const Admin = React.memo(() => {
   const { pathname } = useLocation();
@@ -77,6 +78,7 @@ const Admin = React.memo(() => {
         <Route path="settings/hardware/add" element={<AddHardware />} />
         <Route path="settings/hardware/edit/:id" element={<EditHardware />} />
         <Route path="settings/hardware/adjust/:id" element={<AdjustHardware />} />
+        <Route path="settings/profile" element={<UserProfile />} />
 
 
         <Route path="*" element={<NotFound />} />

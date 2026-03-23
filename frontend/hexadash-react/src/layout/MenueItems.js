@@ -179,71 +179,95 @@ function MenuItems({ toggleCollapsed }) {
     document.body.classList.remove('dark-mode');
   };
 
-    const items = [
-    getItem(
-      <NavLink onClick={toggleCollapsed} to="/admin">
-        Home
-      </NavLink>,
-      'home',
-      !topMenu && <UilCreateDashboard />
-    ),
+   const items = [
 
-    getItem(
-      <NavLink onClick={toggleCollapsed} to="/admin/inventory">
-        Inventory
-      </NavLink>,
-      'inventory',
-      !topMenu && <UilDatabase />
-    ),
+  // HOME
+  getItem(
+    <NavLink onClick={toggleCollapsed} to="/admin">
+      Home
+    </NavLink>,
+    'home',
+    !topMenu && <UilCreateDashboard />
+  ),
 
-    getItem(
-      <NavLink onClick={toggleCollapsed} to="/admin/formula">
-        Formula
-      </NavLink>,
-      'formula',
-      !topMenu && <UilBookOpen />
-    ),
+  // INVENTORY
+  getItem(
+    <NavLink onClick={toggleCollapsed} to="/admin/inventory">
+      Inventory
+    </NavLink>,
+    'inventory',
+    !topMenu && <UilDatabase />
+  ),
 
-    getItem(
-      <NavLink to="/admin/formula-list">
-        Saved Formulas
-      </NavLink>,
-      "formula-list",
-      !topMenu && <UilListUl />,
-    ),
+  // 🔥 FORMULA (SUB MENU)
+  getItem(
+    'Formula',
+    'formula',
+    !topMenu && <UilBookOpen />,
+    [
+      getItem(
+        <NavLink to="/admin/formula">Create Formula</NavLink>,
+        'create-formula'
+      ),
+      getItem(
+        <NavLink to="/admin/formula-list">Saved Formulas</NavLink>,
+        'formula-list'
+      ),
+      getItem(
+        <NavLink to="/admin/ai-formula">Generate AI</NavLink>,
+        'ai-formula'
+      ),
+    ]
+  ),
 
-    getItem(
-      <NavLink onClick={toggleCollapsed} to="/admin/category">
-        Category
-      </NavLink>,
-      'category',
-      !topMenu && <UilLayerGroup />
-    ),
+  // CATEGORY
+  getItem(
+    <NavLink onClick={toggleCollapsed} to="/admin/category">
+      Category
+    </NavLink>,
+    'category',
+    !topMenu && <UilLayerGroup />
+  ),
 
-    getItem(
-      <NavLink onClick={toggleCollapsed} to="/admin/dilution">
-        Dilution
-      </NavLink>,
-      'dilution',
-      !topMenu && <UilWater />
-    ),
+  // 🔥 DILUTION (SUB MENU)
+  getItem(
+    'Dilution',
+    'dilution',
+    !topMenu && <UilWater />,
+    [
+      getItem(
+        <NavLink to="/admin/dilution">Create Dilution</NavLink>,
+        'create-dilution'
+      ),
+      getItem(
+        <NavLink to="/admin/dilution/history">Dilution History</NavLink>,
+        'dilution-history'
+      ),
+    ]
+  ),
 
-    getItem(
-      <NavLink onClick={toggleCollapsed} to="/admin/ai-formula">
-        Generate AI
-      </NavLink>,
-      'ai-formula',
-      !topMenu && <UilChartBar />
-    ),
+  // 🔥 SETTINGS (SUB MENU)
+  getItem(
+    'admin settings',
+    'settings',
+    !topMenu && <UilSetting />,
+    [
+      getItem(
+        <NavLink to="/admin/settings/profile">User Profile</NavLink>,
+        'user-profile'
+      ),
+      getItem(
+        <NavLink to="/admin/settings/hardware">Hardware</NavLink>,
+        'hardware-inventory'
+      ),
+      getItem(
+        <NavLink to="/admin/settings/recycle">Recycle Bin</NavLink>,
+        'recycle'
+      ),
+    ]
+  ),
 
-    getItem(
-      <NavLink onClick={toggleCollapsed} to="/admin/settings">
-        Settings
-      </NavLink>,
-      'settings',
-      !topMenu && <UilSetting />
-    ),
-  ];
+];
 
   return (
     <Menu

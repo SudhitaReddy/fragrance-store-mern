@@ -15,6 +15,7 @@ const aiRoutes = require("./routes/aiRoutes");
 const dashboardRoutes = require("./routes/dashboardRoutes");
 const recycleRoutes = require("./routes/recycleRoutes");
 const hardwareRoutes = require("./routes/hardwareRoutes");
+
 const app = express();
 
 app.use(cors());
@@ -22,7 +23,7 @@ app.use(express.json());
 
 
 app.use("/api/auth", authRoutes);
-app.use("/api/user", userRoutes);
+app.use("/api/users", userRoutes);
 
 // 🔥 ADD THESE
 app.use("/api/chemicals", chemicalRoutes);
@@ -33,6 +34,7 @@ app.use("/api/ai", aiRoutes);
 app.use("/api/dashboard", dashboardRoutes);
 app.use("/api/recycle", recycleRoutes);
 app.use("/api/hardware", hardwareRoutes);
+
 
 mongoose.connect(process.env.MONGO_URI)
 .then(() => console.log("MongoDB Connected"))

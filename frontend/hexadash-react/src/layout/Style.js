@@ -421,7 +421,7 @@ const LayoutContainer = Styled.div`
             }
 
             .ant-menu{
-                font-size: 20px;
+                font-size: 14px;
                 overflow-x: hidden;
                 ${({ theme }) => (theme.rtl ? 'border-left' : 'border-right')}: 0 none;
                 &.ant-menu-dark, &.ant-menu-dark .ant-menu-sub, &.ant-menu-dark .ant-menu-inline.ant-menu-sub {
@@ -439,7 +439,7 @@ const LayoutContainer = Styled.div`
                 .ant-menu-item{
                     ${({ theme }) => (!theme.rtl ? 'padding-right' : 'padding-left')}: 5px;
                     &.ant-menu-item-selected{
-                        border-radius: 0 21px 21px 0;
+                        border-radius: 10px;
                         background-color: ${({ theme }) => theme[theme.mainContent]['menu-active-bg']};
                         &:after{
                             content: none;
@@ -549,7 +549,8 @@ const LayoutContainer = Styled.div`
                     }
                     .ant-menu-submenu-title{
                         .ant-menu-title-content{
-                            font-weight: 500;
+                            font-weight: 600;
+                            font-size : 15px;
                             color: ${({ theme }) => theme[theme.mainContent]['gray-text']};
                         }
                     }
@@ -564,6 +565,7 @@ const LayoutContainer = Styled.div`
                     a{
                         font-size: 14px;
                         font-weight: 500;
+                        letter-spacing : 0.3px;
                         color: ${({ theme }) => theme['gray-text']};
                         position: relative;
                     }
@@ -1234,6 +1236,8 @@ const TopMenuStyle = Styled.div`
 //     }
 
 // `;
+
+
 
 
 

@@ -1,96 +1,108 @@
 import React, { useEffect, useState } from "react";
 import { Table, InputNumber, Button, Input, message } from "antd";
+import { useNavigate } from "react-router-dom";
 import API from "../../api/api";
 import { useLocation } from "react-router-dom";
 
 function Formula() {
+  const navigate = useNavigate();
 
   const location = useLocation();
+
   const [chemicals, setChemicals] = useState([]);
+  const [allChemicals, setAllChemicals] = useState([]); // ⭐ NEW
+  const [showPicker, setShowPicker] = useState(false); // ⭐ NEW
   const [formulaName, setFormulaName] = useState("");
   const [formulaText, setFormulaText] = useState("");
 
-  // ✅ Load only selected chemicals
-useEffect(() => {
-  if (!location.state?.formula) return;
+  // 🔥 LOAD AI FORMULA
+  useEffect(() => {
+    if (!location.state?.formula) return;
 
-  const text = location.state.formula;
-  setFormulaText(text);
+    const text = location.state.formula;
+    setFormulaText(text);
 
-  const lines = text.split("\n");
+    const lines = text.split("\n");
 
-  const parsed = lines
-    .map((line) => {
-      const match = line.match(/(.+)-\s*(\d+)%/);
+    const parsed = lines
+      .map((line) => {
+        const match = line.match(/(.+)-\s*(\d+)%/);
 
-      if (match) {
-        return {
-          _id: `temp-${match[1].trim()}`, // allow chemicals not in inventory
-          name: match[1].trim(),
-          percent: Number(match[2]),
-        };
-      }
+        if (match) {
+          return {
+            _id: `temp-${match[1].trim()}`,
+            name: match[1].trim(),
+            percent: Number(match[2]),
+          };
+        }
 
-      return null;
-    })
-    .filter(Boolean);
+        return null;
+      })
+      .filter(Boolean);
 
-  setChemicals(parsed);
-}, [location.state]);
+    setChemicals(parsed);
+  }, [location.state]);
 
-useEffect(() => {
-  const stored =
-    JSON.parse(localStorage.getItem("selectedChemicals")) || [];
+  // 🔥 LOAD SAVED CHEMICALS
+  useEffect(() => {
+    const stored =
+      JSON.parse(localStorage.getItem("selectedChemicals")) || [];
 
-  if (stored.length > 0) {
-    setChemicals(stored);
-  }
-}, []);
-  
+    if (stored.length > 0) {
+      setChemicals(stored);
+    }
+  }, []);
 
-const autoBalanceTo100 = () => {
-  const total = chemicals.reduce(
-    (sum, c) => sum + (c.percent || 0),
-    0
-  );
+  // 🔥 FETCH ALL CHEMICALS (NEW)
+  useEffect(() => {
+    fetchAllChemicals();
+  }, []);
 
-  if (total >= 100) {
-    message.warning("Total already 100% or more");
-    return;
-  }
+  const fetchAllChemicals = async () => {
+    try {
+      const res = await API.get("/chemicals");
+      setAllChemicals(res.data.data || []);
+    } catch (err) {
+      console.error(err);
+    }
+  };
 
-  const remaining = 100 - total;
+  // 🔥 ADD CHEMICAL FROM PANEL
+  const addChemical = (chem) => {
 
-  const adjustable = chemicals.filter(c => c.percent === 0);
+    const exists = chemicals.find(c => c._id === chem._id);
 
-  if (adjustable.length === 0) {
-    message.error("No chemicals available to balance");
-    return;
-  }
-
-  const share = Math.floor((remaining / adjustable.length) * 100) / 100;
-
-  let used = 0;
-
-  const updated = chemicals.map(c => {
-    if (c.percent === 0) {
-
-      if (used + share >= remaining) {
-        const final = Number((remaining - used).toFixed(2));
-        used += final;
-        return { ...c, percent: final };
-      }
-
-      used += share;
-      return { ...c, percent: share };
+    if (exists) {
+      return message.warning("Already added");
     }
 
-    return c;
-  });
+    const newItem = {
+      _id: chem._id,
+      name: chem.name,
+      percent: 0,
+      category: chem.category
+    };
 
-  setChemicals(updated);
-};
+    const updated = [...chemicals, newItem];
 
+    setChemicals(updated);
+
+    localStorage.setItem(
+      "selectedChemicals",
+      JSON.stringify(updated)
+    );
+  };
+
+  // 🔥 REMOVE
+  const removeChemical = (id) => {
+    const updated = chemicals.filter(c => c._id !== id);
+    setChemicals(updated);
+
+    localStorage.setItem(
+      "selectedChemicals",
+      JSON.stringify(updated)
+    );
+  };
 
   const handlePercentChange = (value, id) => {
     const updated = chemicals.map((item) =>
@@ -127,7 +139,6 @@ const autoBalanceTo100 = () => {
 
       message.success("Formula saved successfully");
 
-      // ✅ Clear selection after save
       localStorage.removeItem("selectedChemicals");
       setChemicals([]);
       setFormulaName("");
@@ -137,34 +148,10 @@ const autoBalanceTo100 = () => {
     }
   };
 
-  const removeChemical = (id) => {
-
-  const updated = chemicals.filter(c => c._id !== id);
-
-  setChemicals(updated);
-
-  localStorage.setItem(
-    "selectedChemicals",
-    JSON.stringify(updated)
-  );
-};
-
   const columns = [
     {
       title: "Chemical",
       dataIndex: "name",
-      render: (_, record) => (
-        <div
-          style={{
-            background: record.category?.color || "#f5f5f5",
-            padding: "6px 10px",
-            borderRadius: 6,
-            fontWeight: 500
-          }}
-        >
-          {record.name}
-        </div>
-      )
     },
     {
       title: "Percentage (%)",
@@ -180,30 +167,39 @@ const autoBalanceTo100 = () => {
       ),
     },
     {
-    title: "Remove",
-    render: (_, record) => (
-      <Button
-        danger
-        size="small"
-        onClick={() => removeChemical(record._id)}
-      >
-        Remove
-      </Button>
-    )
-  },
+      title: "Remove",
+      render: (_, record) => (
+        <Button
+          danger
+          size="small"
+          onClick={() => removeChemical(record._id)}
+        >
+          Remove
+        </Button>
+      ),
+    },
   ];
 
-
-
   return (
-        <div
-      style={{
-        padding: "30px 40px",
-        maxWidth: 900,
-        margin: "auto"
-      }}
-    >
+    <div style={{ padding: 30, maxWidth: 900, margin: "auto" }}>
+
       <h2>Create Formula</h2>
+
+      {/* 🔥 TOGGLE BUTTON */}
+      <div style={{ marginBottom: 20, display: "flex", gap: 10 }}>
+
+        <Button onClick={() => setShowPicker(!showPicker)}>
+          {showPicker ? "Close Panel" : "+ Choose Chemicals"}
+        </Button>
+
+        <Button
+          type="primary"
+          onClick={() => navigate("/admin/ai-formula")}
+        >
+          🤖 Generate with AI
+        </Button>
+
+      </div>
 
       <Input
         placeholder="Formula Name"
@@ -212,22 +208,6 @@ const autoBalanceTo100 = () => {
         onChange={(e) => setFormulaName(e.target.value)}
       />
 
-      {formulaText && (
-        <div style={{ marginBottom: 20 }}>
-          <h3>AI Generated Formula</h3>
-          <pre
-            style={{
-              background: "#f5f5f5",
-              padding: 15,
-              borderRadius: 6,
-              whiteSpace: "pre-wrap"
-            }}
-          >
-            {formulaText}
-          </pre>
-        </div>
-      )}
-
       <Table
         dataSource={chemicals}
         columns={columns}
@@ -235,16 +215,7 @@ const autoBalanceTo100 = () => {
         rowKey="_id"
       />
 
-      <h3 style={{ marginTop: 20 }}>
-        Total: {total}%
-      </h3>
-
-      <Button
-        style={{ marginRight: 10 }}
-        onClick={autoBalanceTo100}
-      >
-        Auto Balance to 100%
-      </Button>
+      <h3 style={{ marginTop: 20 }}>Total: {total}%</h3>
 
       <Button
         type="primary"
@@ -253,6 +224,77 @@ const autoBalanceTo100 = () => {
       >
         Save Formula
       </Button>
+
+      {/* 🔥 SIDE PANEL */}
+      {showPicker && (
+        <>
+          {/* Overlay */}
+          <div
+            onClick={() => setShowPicker(false)}
+            style={{
+              position: "fixed",
+              top: 0,
+              left: 0,
+              width: "100%",
+              height: "100%",
+              background: "rgba(0,0,0,0.2)",
+              zIndex: 999
+            }}
+          />
+
+          {/* Panel */}
+          <div
+            style={{
+              position: "fixed",
+              right: 0,
+              top: 0,
+              width: 320,
+              height: "100vh",
+              background: "#fff",
+              padding: 20,
+              overflowY: "auto",
+              zIndex: 1000
+            }}
+          >
+            <h4>Add Chemicals</h4>
+
+            {allChemicals.map((chem) => (
+              <div
+                key={chem._id}
+                style={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  marginBottom: 10,
+                  border: "1px solid #eee",
+                  padding: 8,
+                  borderRadius: 6
+                }}
+              >
+                <div
+                  style={{
+                    background: chem.category?.color || "#f5f5f5",
+                    padding: "4px 8px",
+                    borderRadius: 6,
+                    color: "#fff",
+                    fontWeight: 500
+                  }}
+                >
+                  {chem.name}
+                </div>
+
+                <Button
+                  size="small"
+                  type="primary"
+                  onClick={() => addChemical(chem)}
+                >
+                  Add
+                </Button>
+              </div>
+            ))}
+          </div>
+        </>
+      )}
+
     </div>
   );
 }

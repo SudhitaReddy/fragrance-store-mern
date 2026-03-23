@@ -27,10 +27,7 @@ const dilutionSchema = new mongoose.Schema(
     required: true
   },
 
-  strength: {
-    type: Number,
-    required: true
-  },
+  
 
   totalVolume: {
     type: Number,

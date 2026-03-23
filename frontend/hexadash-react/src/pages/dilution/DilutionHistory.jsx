@@ -60,10 +60,7 @@ function DilutionHistory() {
   dataIndex: "alcoholAmount"
 },
 
-{
-  title: "Strength %",
-  dataIndex: "strength"
-},
+
 
 {
   title: "Total Volume",
