@@ -707,7 +707,7 @@ const LayoutContainer = Styled.div`
     .atbd-main-layout{
         ${({ theme }) => (!theme.rtl ? 'margin-left' : 'margin-right')}: ${({ theme }) =>
   theme.topMenu ? 0 : '280px'};
-        margin-top: 74px;
+        margin-top: 0px;
         transition: 0.3s ease;
 
         @media only screen and (max-width: 1150px){

@@ -73,11 +73,12 @@ const ThemeLayout = (WrappedComponent) => {
       };
 
       const SideBarStyle = {
-        margin: '63px 0 0 0',
+        margin: '0 0 0 0',
         padding: `${!rtl ? '20px 20px 55px 0' : '20px 0 55px 20px'}`,
         overflowY: 'auto',
         height: '100vh',
         position: 'fixed',
+        
         [left]: 0,
         zIndex: 988,
       };

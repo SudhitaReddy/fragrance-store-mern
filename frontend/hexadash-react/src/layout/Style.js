@@ -358,6 +358,8 @@ const LayoutContainer = Styled.div`
 
         &.ant-layout-sider-collapsed{
             padding: 15px 0px 55px !important;
+            margin-top: 0 !important;
+            margin: 0 !important;
             .ant-layout-sider-children{
                 .ninjadash-sidebar-nav-title{
                     display: none;
@@ -391,6 +393,7 @@ const LayoutContainer = Styled.div`
                     .ant-menu-submenu-inline{
                         > .ant-menu-submenu-title{
                             padding: 0 20px !important;
+                            
                         }
                     }
                     .ant-menu-item{
@@ -709,7 +712,7 @@ const LayoutContainer = Styled.div`
     .atbd-main-layout{
         ${({ theme }) => (!theme.rtl ? 'margin-left' : 'margin-right')}: ${({ theme }) =>
   theme.topMenu ? 0 : '280px'};
-        margin-top: 10px;
+        margin-top: 0 !important;
         transition: 0.3s ease;
 
         @media only screen and (max-width: 1150px){

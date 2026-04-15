@@ -36,9 +36,12 @@ app.use("/api/recycle", recycleRoutes);
 app.use("/api/hardware", hardwareRoutes);
 
 
-mongoose.connect(process.env.MONGO_URI)
+mongoose.connect(process.env.MONGO_URI, {
+  dbName: "test"
+})
 .then(() => console.log("MongoDB Connected"))
 .catch(err => console.log(err));
+
 
 app.listen(5000, () => {
   console.log("Server running on port 5000");

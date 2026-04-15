@@ -27,20 +27,39 @@ exports.getDashboardData = async (req, res) => {
       .limit(5);
 
     // CATEGORY DISTRIBUTION
-    const categoryStatsRaw = await Chemical.aggregate([
-      { $match: { isDeleted: { $ne: true } } },
-      {
-        $group: {
-          _id: "$category",
-          value: { $sum: 1 }
-        }
-      }
-    ]);
+  const categoryStats = await Chemical.aggregate([
+  { $match: { isDeleted: { $ne: true } } },
 
-    const categoryStats = categoryStatsRaw.map(c => ({
-      name: c._id || "Unknown",
-      value: c.value
-    }));
+  {
+    $group: {
+      _id: "$category",
+      value: { $sum: 1 }
+    }
+  },
+
+  {
+    $lookup: {
+      from: "categories", // ⚠️ collection name (IMPORTANT)
+      localField: "_id",
+      foreignField: "_id",
+      as: "category"
+    }
+  },
+
+  {
+    $unwind: {
+      path: "$category",
+      preserveNullAndEmptyArrays: true
+    }
+  },
+
+  {
+    $project: {
+      name: "$category.name", // ✅ THIS FIXES YOUR ISSUE
+      value: 1
+    }
+  }
+]);
 
     res.json({
       chemicals: chemicalsCount,

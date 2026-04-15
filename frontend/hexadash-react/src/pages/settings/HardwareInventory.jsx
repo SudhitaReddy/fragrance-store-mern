@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
-import API from "../../api/api";
+import { Table, Button, Input, Tag, Space, Popconfirm, message } from "antd";
 import { useNavigate } from "react-router-dom";
-import "bootstrap/dist/css/bootstrap.min.css";
+import API from "../../api/api";
 
 function HardwareInventory() {
   const [items, setItems] = useState([]);
@@ -20,7 +20,7 @@ function HardwareInventory() {
       const res = await API.get("/hardware");
       setItems(res.data.data || []);
     } catch (error) {
-      console.error(error);
+      message.error("Failed to load hardware");
     } finally {
       setLoading(false);
     }
@@ -29,188 +29,115 @@ function HardwareInventory() {
   const deleteItem = async (id) => {
     try {
       await API.delete(`/hardware/${id}`);
+      message.success("Moved to recycle bin");
       fetchHardware();
     } catch (error) {
-      console.error(error);
+      message.error("Delete failed");
     }
   };
 
-  const confirmDelete = (id) => {
-    const confirm = window.confirm("Move this item to recycle bin?");
-    if (confirm) deleteItem(id);
-  };
-
-  // 🔍 FILTER (name + type)
+  // 🔍 FILTER
   const filtered = items.filter((item) =>
     (item.name + item.type)
       .toLowerCase()
       .includes(search.toLowerCase())
   );
 
-  // 📊 STATUS LOGIC
+  // 📊 STATUS
   const getStatus = (qty) => {
-    if (qty === 0) return { text: "Out of Stock", color: "danger" };
-    if (qty <= 5) return { text: "Low Stock", color: "warning" };
-    return { text: "In Stock", color: "success" };
+    if (qty === 0) return { text: "Out of Stock", color: "red" };
+    if (qty <= 5) return { text: "Low Stock", color: "orange" };
+    return { text: "In Stock", color: "green" };
   };
 
+  const columns = [
+    {
+      title: "Name",
+      dataIndex: "name",
+      render: (text) => <strong>{text}</strong>,
+    },
+    {
+      title: "Type",
+      dataIndex: "type",
+      render: (text) => text || "-",
+    },
+    {
+      title: "Quantity",
+      dataIndex: "quantity",
+      render: (qty) => <strong>{qty}</strong>,
+    },
+    {
+      title: "Status",
+      render: (_, record) => {
+        const status = getStatus(record.quantity);
+        return <Tag color={status.color}>{status.text}</Tag>;
+      },
+    },
+    {
+      title: "Actions",
+      render: (_, record) => (
+        <Space wrap>
+          <Button
+            type="link"
+            onClick={() =>
+              navigate(`/admin/settings/hardware/adjust/${record._id}`)
+            }
+          >
+            Adjust
+          </Button>
+
+          <Button
+            type="link"
+            onClick={() =>
+              navigate(`/admin/settings/hardware/edit/${record._id}`)
+            }
+          >
+            Edit
+          </Button>
+
+          <Popconfirm
+            title="Move to recycle bin?"
+            onConfirm={() => deleteItem(record._id)}
+          >
+            <Button type="link" danger>
+              Move to Bin
+            </Button>
+          </Popconfirm>
+        </Space>
+      ),
+    },
+  ];
+
   return (
-    <div className="container-fluid mt-3">
+    <div style={{ padding: 20 }}>
 
       {/* HEADER */}
-      <div className="d-flex justify-content-between align-items-center mb-3">
-        <h4>Hardware Inventory</h4>
+      <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 20 }}>
+        <h2>Hardware Inventory</h2>
 
-        <button
-          className="btn btn-primary"
+        <Button
+          type="primary"
           onClick={() => navigate("/admin/settings/hardware/add")}
         >
           + Add Hardware
-        </button>
+        </Button>
       </div>
 
-      {/* 📊 STATS CARDS */}
-      <div className="row mb-3">
-
-        <div className="col-md-3">
-          <div className="card p-2 text-center shadow-sm">
-            <small>Total Items</small>
-            <h5>{items.length}</h5>
-          </div>
-        </div>
-
-        <div className="col-md-3">
-          <div className="card p-2 text-center shadow-sm">
-            <small>Low Stock</small>
-            <h5>
-              {items.filter(i => i.quantity <= 5 && i.quantity > 0).length}
-            </h5>
-          </div>
-        </div>
-
-        <div className="col-md-3">
-          <div className="card p-2 text-center shadow-sm">
-            <small>Out of Stock</small>
-            <h5>
-              {items.filter(i => i.quantity === 0).length}
-            </h5>
-          </div>
-        </div>
-
-      </div>
-
-      {/* 🔍 SEARCH */}
-      <div className="row mb-3">
-        <div className="col-md-4">
-          <input
-            type="text"
-            className="form-control"
-            placeholder="Search by name or type..."
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-          />
-        </div>
-      </div>
+      {/* SEARCH */}
+      <Input
+        placeholder="Search by name or type..."
+        value={search}
+        onChange={(e) => setSearch(e.target.value)}
+        style={{ width: 300, marginBottom: 20 }}
+      />
 
       {/* TABLE */}
-      {loading ? (
-        <p className="text-center mt-4">Loading hardware...</p>
-      ) : (
-        <div className="table-responsive">
-          <table className="table table-hover align-middle">
-
-            <thead className="table-dark">
-              <tr>
-                <th>Name</th>
-                <th>Type</th>
-                <th>Quantity</th>
-                <th>Status</th>
-                <th style={{ width: "260px" }}>Actions</th>
-              </tr>
-            </thead>
-
-            <tbody>
-              {filtered.map((item) => {
-                const status = getStatus(item.quantity);
-
-                return (
-                  <tr
-                    key={item._id}
-                    className={
-                      item.quantity === 0
-                        ? "table-danger"
-                        : item.quantity <= 5
-                        ? "table-warning"
-                        : ""
-                    }
-                  >
-                    <td><strong>{item.name}</strong></td>
-
-                    <td>{item.type || "-"}</td>
-
-                    <td>
-                      <span className="fw-bold">
-                        {item.quantity}
-                      </span>
-                    </td>
-
-                    <td>
-                      <span className={`badge bg-${status.color}`}>
-                        {status.text}
-                      </span>
-                    </td>
-
-                    <td>
-                      <div className="d-flex gap-2 flex-wrap">
-
-                        {/* ADJUST */}
-                        <button
-                          className="btn btn-sm btn-outline-primary"
-                          onClick={() =>
-                            navigate(`/admin/settings/hardware/adjust/${item._id}`)
-                          }
-                        >
-                          Adjust
-                        </button>
-
-                        {/* EDIT */}
-                        <button
-                          className="btn btn-sm btn-outline-warning"
-                          onClick={() =>
-                            navigate(`/admin/settings/hardware/edit/${item._id}`)
-                          }
-                        >
-                          Edit
-                        </button>
-
-                        {/* DELETE → RECYCLE */}
-                        <button
-                          className="btn btn-sm btn-outline-danger"
-                          onClick={() => confirmDelete(item._id)}
-                        >
-                          Move to Bin
-                        </button>
-
-                      </div>
-                    </td>
-                  </tr>
-                );
-              })}
-
-              {filtered.length === 0 && (
-                <tr>
-                  <td colSpan="5" className="text-center py-4 text-muted">
-                    No hardware found. Click "Add Hardware" to create one.
-                  </td>
-                </tr>
-              )}
-
-            </tbody>
-
-          </table>
-        </div>
-      )}
-
+      <Table
+        rowKey="_id"
+        columns={columns}
+        dataSource={filtered}
+        loading={loading}
+      />
     </div>
   );
 }
